@@ -30,7 +30,7 @@ body {
     /* height: 200px; */
     background-color: darkkhaki;
     /* float: left; */
-    position:fixed;
+    position: fixed;
 }
 
 #nav-placeholder {
@@ -46,7 +46,7 @@ body {
 
 #supporting {
     width: 100px;
-    height: 150px;
+    height: 200px;
     background-color: darkgray;
     float: left;
 }
