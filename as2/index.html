@@ -1,45 +1,75 @@
 <!doctype html>
 <html lang="zh-Hant">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>範例：滿屏 Banner + 置中並排 Navigator & Content + Footer</title>
+  <title>AS2：第一次運用AI製作網站！</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <!-- Banner（滿屏） -->
-  <header class="banner" role="banner">
+  <header class="banner" role="banner"
+    style="background: url('https://picsum.photos/1200/400/?nature') center/cover no-repeat;">
     <div class="inner">
-      <h1 class="title">歡迎來到我的示範頁面</h1>
-      <p class="subtitle">這是一個滿屏 Banner。向下滑動即可看到導覽 (navigator) 與內容 (content) 並排置中的區塊，最下方有 footer。</p>
+      <h1 class="title">身於網絡之中：傳播科技觀察分析</h1>
+      <p class="subtitle">
+        現今社會裡，傳播科技的蓬勃發展創造能供性，減少人類的麻煩、增加便捷，讓人們更加去仰賴科技的存在。傳播科技的存在滲透在日常生活之中的每一個人之中，透過此次的公共觀察（Public
+        Observation）以及個人觀察（Personal Observation），提出自己與他人之間科技使用行為的異同點、發現以及分析。
+      </p>
       <p><a class="cta" href="#main">往下查看</a></p>
     </div>
   </header>
 
+
   <!-- Main：navigator + content 並排且置中 -->
   <main id="main" class="main">
     <div class="container">
+      <!-- 左側導覽 -->
       <nav class="nav" aria-label="主要導覽">
-        <h3>主要導覽</h3>
+        <h3>分析發現</h3>
         <ul>
-          <li><a href="#">首頁</a></li>
-          <li><a href="#">關於我們</a></li>
-          <li><a href="#">服務項目</a></li>
-          <li><a href="#">聯絡方式</a></li>
+          <li><a href="#scene01">前言</a></li>
+          <li><a href="#scene02">發現一：科技使用者的落差化</a></li>
+          <li><a href="#scene03">發現二：科技冷漠的出現</a></li>
+          <li><a href="#scene04">發現三：電子產品的工具性</a></li>
         </ul>
       </nav>
 
-      <section class="content" aria-label="主要內容">
-        <h2>內容區塊標題</h2>
-        <p>這裡放置主要內容，例如文章、圖片或其他元件。當視窗寬度夠大時，導覽與內容會並排顯示並且置中；在手機或窄視窗時，導覽會移到上方，內容會在下方，確保使用者體驗良好。</p>
-        <p>你可以在此加入卡片、表格或任何想要的元件。範例使用彈性布局（flexbox）來達成並排與置中的效果，並搭配響應式斷點在小螢幕上自動堆疊。</p>
-      </section>
+      <!-- 右側內容（上下排列） -->
+      <div class="content-area">
+        <section id="scene01" class="content" aria-label="前言">
+          <h2>前言</h2>
+          <p>對於觀察紀錄中的發現與分析，內文將分成三大點來進行分享與探討，包含科技使用者的落差化、科技冷漠的出現、以及電子產品的工具性，並依據觀察紀錄、所學與反思，對於上述內容提出自己對其的看法與期待。</p>
+        </section>
+        <section id="scene02" class="content" aria-label="發現一">
+          <h2>發現一：科技使用者的落差化</h2>
+          <p>
+            第一次在餐廳的公共觀察中，有一桌看似是一家人（爺爺奶奶、父母、兩位約國小與幼稚園年齡的孩子），在等待上菜、享用菜餚和離開時，都在看自己的手機以及玩手遊，但是爺爺奶奶他們並沒有拿出手機，而是看著低頭的他們並無交流。這一幕讓我感覺到了數位落差的展現，我的奶奶也不會使用智慧型手機，因此在相關話題上就需要更多的解釋與說明。由此可見，雖然現在世代看似是科技普及化，人人有一機，實際上科技的使用還是有年齡問題的忽視與落差，並非全然的科技化時代。
+          </p>
+        </section>
+        <section id="scene03" class="content" aria-label="發現二">
+          <h2>發現二：科技冷漠的出現</h2>
+          <p>
+            科技帶來便捷，可以縮短人與人之間的物理距離，但也能擴大人與人之間的心理距離。從第一次在餐廳的公共觀察中，兩桌客人在上菜前幾乎沒有任何交流，即便是面對面相聚，也是彼此投入在手機當中。而自己第二天在學校的個人觀察中，自己也是在課堂前即便有同學在旁，我和她都只會看起手機，並無交談。自己認為「看手機」或許是一種能夠減少社交、穩待舒適圈、避免人與人交流尷尬的方式，但實際上不然，它已經成為了一種習慣，降低人與人之間的熱絡，或許不是科技所期待的願景。
+          </p>
+        </section>
+        <section id="scene04" class="content" aria-label="發現三">
+          <h2>發現三：電子產品的工具性</h2>
+          <p>
+            手機不離身是現代世人的行為，從觀察中也可以知道自己也是。從兩次公共觀察中，可以得知，大家對於電子產品（如：平板、筆電、手機等）的仰賴非常高，就像是餐廳利用平板與app運行與行銷、圖書館的學生大多使用電子產品做筆記、自己也使用平板閱讀電子教材、線上考試與自學、網際網路的活躍可以進行資料查詢、線上平台的高度發展成為學生繳交作業的管道等。由此可見，電子產品減少人們許多時間與材料成本，為人們提供相當的工具性，提高人類效率，成為極佳的好幫手。但電子商品的蓬勃發展，會降低人們對於紙本的使用頻率，如：線上教材。但紙本作為最初始、最具直接性的傳播科技媒體，或許會逐漸減少，但我認為一定不會沒落。
+          </p>
+        </section>
+      </div>
+    </div>
     </div>
   </main>
 
   <!-- Footer -->
   <footer>
-    © 2025 範例網站 • 建議：將內容改為你的公司或個人資訊
+    © 2025 網頁設計與敘事ASO2 • 製作者：許容榕、AI大力協助 • 內文取自大一寫的科技使用習慣分析報告
   </footer>
 </body>
+
 </html>
