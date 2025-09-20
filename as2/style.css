@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>範例：滿屏 Banner + 置中並排 Navigator & Content + Footer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Banner（滿屏） -->
+  <header class="banner" role="banner">
+    <div class="inner">
+      <h1 class="title">歡迎來到我的示範頁面</h1>
+      <p class="subtitle">這是一個滿屏 Banner。向下滑動即可看到導覽 (navigator) 與內容 (content) 並排置中的區塊，最下方有 footer。</p>
+      <p><a class="cta" href="#main">往下查看</a></p>
+    </div>
+  </header>
+
+  <!-- Main：navigator + content 並排且置中 -->
+  <main id="main" class="main">
+    <div class="container">
+      <nav class="nav" aria-label="主要導覽">
+        <h3>主要導覽</h3>
+        <ul>
+          <li><a href="#">首頁</a></li>
+          <li><a href="#">關於我們</a></li>
+          <li><a href="#">服務項目</a></li>
+          <li><a href="#">聯絡方式</a></li>
+        </ul>
+      </nav>
+
+      <section class="content" aria-label="主要內容">
+        <h2>內容區塊標題</h2>
+        <p>這裡放置主要內容，例如文章、圖片或其他元件。當視窗寬度夠大時，導覽與內容會並排顯示並且置中；在手機或窄視窗時，導覽會移到上方，內容會在下方，確保使用者體驗良好。</p>
+        <p>你可以在此加入卡片、表格或任何想要的元件。範例使用彈性布局（flexbox）來達成並排與置中的效果，並搭配響應式斷點在小螢幕上自動堆疊。</p>
+      </section>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    © 2025 範例網站 • 建議：將內容改為你的公司或個人資訊
+  </footer>
+</body>
+</html>
