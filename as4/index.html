@@ -1,68 +1,317 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>AS4: Generative-Images and Sticky-top</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+        }
+
         #section1 div:first-child {
-            background-image: url("https://p4css.github.io/webScroll/assets/taipei-1.jpg");
+            background-image: url("https://jungjunghsu.github.io/as4/assets/story02.jpg");
             background-position: center;
             background-repeat: no-repeat;
             background-size: cover;
         }
 
         #section2 div:first-child {
-            background-image: url("https://p4css.github.io/webScroll/assets/taipei-2.jpg");
+            background-image: url("https://jungjunghsu.github.io/as4/assets/story03.jpg");
             background-position: center;
             background-repeat: no-repeat;
             background-size: cover;
         }
 
         #section3 div:first-child {
-            background-image: url("https://p4css.github.io/webScroll/assets/taipei-3.jpg");
+            background-image: url("https://jungjunghsu.github.io/as4/assets/story04.jpg");
             background-position: center;
             background-repeat: no-repeat;
             background-size: cover;
         }
 
         #section4 div:first-child {
-            background-image: url("https://p4css.github.io/webScroll/assets/taipei-4.jpg");
+            background-image: url("https://jungjunghsu.github.io/as4/assets/story05.jpg");
             background-position: center;
             background-repeat: no-repeat;
             background-size: cover;
         }
-    </style>
 
+        #section5 div:first-child {
+            background-image: url("https://jungjunghsu.github.io/as4/assets/story06.jpg");
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        #section6 div:first-child {
+            background-image: url("https://jungjunghsu.github.io/as4/assets/story07.JPG");
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        #section7 div:first-child {
+            background-image: url("https://jungjunghsu.github.io/as4/assets/story08.JPG");
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        #section8 div:first-child {
+            background-image: url("https://jungjunghsu.github.io/as4/assets/story09.JPG");
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        #section9 div:first-child {
+            background-image: url("https://jungjunghsu.github.io/as4/assets/story10.JPG");
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        #section10 div:first-child {
+            background-image: url("https://jungjunghsu.github.io/as4/assets/story01.jpg");
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        /* ---------- 新增：flyer box 樣式 ---------- */
+        .flyer-box {
+            position: relative;
+            /* relative + z-index 讓元素可疊放 */
+            z-index: 2050;
+            /* 高於 bootstrap 的 sticky-top（bootstrap 內建 z-index） */
+            max-width: 680px;
+            margin-left: auto;
+            margin-right: auto;
+            /* 負的 margin-top 使它重疊到 sticky 圖片上，並隨頁面一起滾動（不是固定） */
+            margin-top: 0;
+            background: rgba(255, 255, 255, 0.92);
+            color: #111;
+            padding: 1.25rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        /* 可視化示範小標題 */
+        .flyer-box h2 {
+            margin: 0 0 .5rem 0;
+            font-size: clamp(18px, 2.4vw, 24px);
+        }
+
+        /* 手機或窄螢幕時微調 */
+        @media (max-width: 576px) {
+            .flyer-box {
+                margin-top: -10vh;
+                padding: 1rem;
+                max-width: calc(100% - 2rem);
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <div class="container-fluid vh-100 bg-secondary text-white d-flex align-items-center justify-content-center">
-        <h1>Division 1</h1>
-    </div>
 
-    </section>
+    <body>
+        <div class="container-fluid vh-100 text-white d-flex flex-column align-items-center justify-content-center text-center"
+            style="background-image: url('https://jungjunghsu.github.io/as4/assets/story01.jpg'); 
+               background-size: cover; 
+               background-position: center; 
+               background-repeat: no-repeat;">
+
+            <h1 style="font-family: 'Songti SC', 'SimSun', 'PMingLiU', serif; 
+                   font-weight: 600; 
+                   text-shadow: 2px 2px 6px rgba(0,0,0,0.4); 
+                   margin-bottom: 1.5rem;">
+                可以給我一個擁抱嗎？
+            </h1>
+
+            <p style="margin-top: 0.5rem; 
+                  margin-bottom: 0.5rem; 
+                  text-shadow: 1px 1px 4px rgba(0,0,0,0.5);">
+                【AS4：Generative-Images and Sticky-top】
+            </p>
+
+            <p style="margin-top: 0; 
+                  text-shadow: 1px 1px 4px rgba(0,0,0,0.5);">
+                此次作業結合AI生成圖片工具，結合Sticky-top和flyer text等課程所學做設計。<br>
+                希望以「繪本」的方式呈現，讓使用者在瀏覽時能有故事感。
+            </p>
+        </div>
+    </body>
+
+    <!-- Section 1 -->
     <section id="section1" style="height:300vh;">
         <div class="sticky-top" style="height:100vh;"></div>
+
+        <!-- flyer text box（會重疊在圖片上方並隨滾動移動） -->
+        <div class="flyer-box text-center">
+            <p>在一片美麗的森林裡生活著一隻刺蝟。</p>
+            <p>刺蝟說：「我這麼可怕...大家都怕我的刺，怎麼辦...」</p>
+            <p>它總是躲在樹叢中，孤單地度過每一天...</p>
+            <p style="font-family: 'Times New Roman', Times, serif; color: #666666;">
+                Generate-Prompt: a beautiful forest scene with a small, cute hedgehog hiding alone in the bushes,
+                Post-Impressionism.</p>
+        </div>
+        <div style="height:220vh"></div>
     </section>
+
+    <!-- Section 2 -->
     <section id="section2" style="height:300vh;">
         <div class="sticky-top" style="height:100vh;"></div>
+        <div class="flyer-box text-center">
+            <p>有一天，莉莉帶著粉紅色氣球，開心地來到了森林裡。</p>
+            <p>莉莉開心地哼著歌:「啦～啦～啦～」</p>
+            <p style="font-family: 'Times New Roman', Times, serif; color: #666666;">
+                Generate-Prompt: a little cute girl entering the forest, holding a balloon, feeling happy enjoying in
+                the forest, Post-Impressionism.</p>
+        </div>
+        <div style="height:220vh"></div>
     </section>
 
+    <!-- Section 3 -->
     <section id="section3" style="height:300vh;">
         <div class="sticky-top" style="height:100vh;"></div>
+        <div class="flyer-box text-center">
+            <p>結果一不小心，莉莉的粉色氣球卡在了樹上...</p>
+            <p>莉莉緊張地大叫：「啊！氣球卡住了，怎麼辦！」</p>
+            <p style="font-family: 'Times New Roman', Times, serif; color: #666666;">
+                Generate-Prompt: a pink stuck balloon, which is high up in the tree branches. Post-Impressionism.</p>
+        </div>
+        <div style="height:220vh"></div>
     </section>
 
+    <!-- Section 4 -->
     <section id="section4" style="height:300vh;">
         <div class="sticky-top" style="height:100vh;"></div>
+        <div class="flyer-box text-center">
+            <p>莉莉焦急地搖晃著樹、跳呀跳、跳呀跳...</p>
+            <p>但氣球始終卡在高高的樹枝上。</p>
+            <p style="font-family: 'Times New Roman', Times, serif; color: #666666;">
+                Generate-Prompt: a little cute girl try to reaching up and shaking the tree, trying to retrieve the
+                stuck pink balloon, which is high up in the tree branches. Post-Impressionism.</p>
+        </div>
+        <div style="height:220vh"></div>
     </section>
 
-    <div class="container-fluid vh-100 bg-secondary text-white d-flex align-items-center justify-content-center">
-        <h1>Division 2</h1>
-    </div>
+    <!-- Section 5 -->
+    <section id="section5" style="height:300vh;">
+        <div class="sticky-top" style="height:100vh;"></div>
+        <div class="flyer-box text-center">
+            <p> 刺蝟看到後，鼓起勇氣，緊張小聲地說：「那個...我可以幫妳...」</p>
+            <p style="font-family: 'Times New Roman', Times, serif; color: #666666;">
+                Generate-Prompt: a little cute hedgehog walking through the forest, and unexpectedly discovering a
+                little cute girl reaching up and shaking the tree, trying to retrieve the stuck pink balloon, which is
+                high up in the tree branches, with an expression of curiosity or surprise. Post-Impressionism.
+            </p>
+        </div>
+        <div style="height:220vh"></div>
+    </section>
+
+    <!-- Section 6 -->
+    <section id="section6" style="height:300vh;">
+        <div class="sticky-top" style="height:100vh;"></div>
+        <div class="flyer-box text-center">
+            <p>刺蝟小心地、輕輕地爬上樹，將氣球輕輕地拿了下來，交給了莉莉。</p>
+            <p>刺蝟說:「這個還給妳」</p>
+            <p style="font-family: 'Times New Roman', Times, serif; color: #666666;">
+                a little cute hedgehog cleverly and carefully taking down a pink balloon, which stuck high up in the
+                tree branches. Post-Impressionism.</p>
+        </div>
+        <div style="height:220vh"></div>
+    </section>
+
+    <!-- Section 7 -->
+    <section id="section7" style="height:300vh;">
+        <div class="sticky-top" style="height:100vh;"></div>
+        <div class="flyer-box text-center">
+            <p>莉莉很謝謝刺蝟，想要抱抱它。</p>
+            <p>莉莉說：「謝謝你！我可以給你一個擁抱嗎？」</p>
+            <p style="font-family: 'Times New Roman', Times, serif; color: #666666;">
+                Generate-Prompt: a little cute girl try to reaching up and shaking the tree, trying to retrieve the
+                stuck pink balloon, which is high up in the tree branches. Post-Impressionism.</p>
+        </div>
+        <div style="height:220vh"></div>
+    </section>
+
+    <!-- Section 8 -->
+    <section id="section8" style="height:300vh;">
+        <div class="sticky-top" style="height:100vh;"></div>
+        <div class="flyer-box text-center">
+            <p>刺蝟說：「不，不要！我怕我會傷害到你。」</p>
+            <p style="font-family: 'Times New Roman', Times, serif; color: #666666;">
+                Generate-Prompt: a little cute hedgehog and a little cute girl with a pink balloon in the forest. the
+                little cute
+                hedgehog stepping back, use his paws to cover his body, showing fear. Post-Impressionism.</p>
+        </div>
+        <div style="height:220vh"></div>
+    </section>
+
+    <!-- Section 9 -->
+    <section id="section9" style="height:300vh;">
+        <div class="sticky-top" style="height:100vh;"></div>
+        <div class="flyer-box text-center">
+            <p>莉莉說：「那麼脆弱的氣球都不怕了，放心，刺蝟先生，我不會受傷的！」</p>
+            <p>莉莉輕輕地擁抱了刺蝟。刺蝟心想：「原來我沒那麼可怕呀...」</p>
+            <p style="font-family: 'Times New Roman', Times, serif; color: #666666;">
+                Generate-Prompt: in the forest, a little cute girl with a pink balloon gently embracing a little cute
+                hedgehog, showing warmth and intimacy. Post-Impressionism.</p>
+        </div>
+        <div style="height:220vh"></div>
+    </section>
+
+    <!-- Section 10 -->
+    <section id="section10" style="height:600vh;">
+        <div class="sticky-top" style="height:100vh;"></div>
+        <div class="flyer-box text-center">
+            <p>從此以後，刺蝟和莉莉成為了好朋友，也結識了許多森林的夥伴。</p>
+            <p>有時候，溫柔對待身邊的人事物，會收穫到很多溫暖喔！</p>
+            <p style="font-family: 'Times New Roman', Times, serif; color: #666666;">
+                Generate-Prompt: in the forest, a little cute girl with a pink balloon and a little cute hedgehog,
+                walking together happily, back view. Post-Impressionism.</p>
+        </div>
+        <div style="height:220vh"></div>
+        <div class="flyer-box text-center" style="max-width: 600px; 
+            margin: 0 auto; 
+            background: rgba(255, 255, 255, 0.85); 
+            color: #333; 
+            padding: 2rem; 
+            border-radius: 15px; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);">
+
+            <h1 style="font-family: 'Songti SC','SimSun','PMingLiU',serif; 
+               font-weight: 400; 
+               margin-bottom: 1rem;">
+                作業簡介說明
+            </h1>
+
+            <p style="font-size: 1.1rem; 
+              line-height: 1.8; 
+              margin: 0;">
+                本次作業運用 ChatGPT（協助構思腳本）、Image Creator（AI圖片生成）、AI擴圖工具製作。
+            </p>
+        </div>
+        <div style="height:220vh"></div>
+    </section>
+
+    <!-- End section -->
+    <footer class="text-center text-white py-4" style="background: linear-gradient(135deg, #2c3e50, #34495e); 
+               margin: 0; padding: 2rem 1rem;">
+        <p style="margin: 0; font-size: 0.95rem; line-height: 1.6;">
+            © 2025 新聞一 R14342007 許容榕 | AS4：Generative-Images and Sticky-top
+            <br>
+            使用 ChatGPT、AI Image Creator、老師課堂所教秘笈製作
+        </p>
+    </footer>
 </body>
 
 </html>
