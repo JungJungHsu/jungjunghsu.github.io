@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AS#6: Keyframe & Transition</title>
+<style>
+/* ------------------ 基本樣式 ------------------ */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: "Noto Sans TC", sans-serif;
+  color: #333;
+  scroll-behavior: smooth;
+  background-color: #f9f9f9;
+}
+section {
+  padding: 100px 0;
+  text-align: center;
+}
+
+/* ------------------ ① Banner ------------------ */
+.banner {
+  height: 100vh;
+  background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80') center/cover;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 3rem;
+  letter-spacing: 2px;
+  text-shadow: 0 0 20px rgba(0,0,0,0.6);
+}
+
+/* ------------------ ② 圖片上升動畫 ------------------ */
+.image-section {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  overflow: hidden;
+}
+.image-section img {
+  width: 600px;
+  opacity: 0;
+  transform: translateY(100px);
+  animation: none;
+}
+@keyframes slideUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.image-section img.active {
+  animation: slideUp 1.2s ease-out forwards;
+}
+
+/* ------------------ ③ 翻卡效果 ------------------ */
+.flip-section {
+  background: #fff;
+  height: 100vh;                 /* 👈 讓整個 section 滿屏高 */
+  display: flex;                 /* 👈 開啟 flex 排版 */
+  flex-direction: column;        /* 👈 讓標題與卡片垂直排列 */
+  justify-content: center;       /* 👈 垂直置中 */
+  align-items: center;           /* 👈 水平置中 */
+}
+.card-container {
+  perspective: 1000px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.card {
+  width: 320px;
+  height: 220px;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 1s;
+}
+.card.flip {
+  transform: rotateY(180deg);
+}
+.card .front, .card .back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  backface-visibility: hidden;
+}
+.card .front {
+  background: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&q=60') center/cover;
+}
+.card .back {
+  background: #004d40;
+  color: white;
+  transform: rotateY(180deg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.3rem;
+}
+
+/* ------------------ ④ Focus Mode ------------------ */
+.focus-section {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* 背景圖 + 變暗用偽元素 */
+.focus-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+  filter: brightness(1);         /* 初始亮 */
+  transition: filter 1.5s ease, opacity 1.5s ease;
+  z-index: 0;
+  opacity: 1;
+}
+
+.focus-section.active::before {
+  filter: brightness(0.4);       /* 進入畫面變暗 */
+}
+
+/* 文字容器 */
+.focus-content {
+  position: relative;            /* 前景層 */
+  z-index: 1;                    /* 確保在偽元素上方 */
+  background: rgba(0,0,0,0.4);  /* 半透明底 */
+  color: #fff;                   /* 文字保持白色 */
+  padding: 40px 60px;
+  border-radius: 16px;
+  text-align: center;
+  max-width: 700px;
+  line-height: 1.8;
+  backdrop-filter: blur(4px);
+  transform: translateY(20px);
+  opacity: 0;
+  transition: opacity 1s ease, transform 1s ease;
+}
+
+.focus-section.active .focus-content {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+
+/* ------------------ ⑤ 文字底線動畫 ------------------ */
+.text-section {
+  height: 100vh;              /* 滿屏高度 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;    /* 垂直置中 */
+  align-items: center;        /* 水平置中 */
+  font-size: 1.3rem;
+  line-height: 2;
+  max-width: 800px;
+  margin: auto;
+  padding: 0 20px;            /* 左右留白 */
+  text-align: center;
+}
+
+/* span 文字底線動畫 */
+.text-section span {
+  position: relative;
+  display: inline-block;
+  margin: 0 2px;              /* 適度空隙，避免底線黏在一起 */
+}
+.text-section span::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 3px;
+  background: #00bfa5;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 1s ease;
+}
+
+/* 當 span 進入視窗時，底線動畫展開 */
+.text-section span.active::after {
+  transform: scaleX(1);
+}
+
+/* ------------------ ⑥ Footer ------------------ */
+footer {
+  background-color: #002d24;
+  color: #e0f2f1;
+  text-align: center;
+  padding: 40px 0;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+}
+</style>
+</head>
+<body>
+
+<!-- ① Banner -->
+<section class="banner">
+  <h1>AS#6: Keyframe & Transition</h1>
+  <p style="font-size: 1.5rem; margin-top: 10px;">學習利用 Keyframe & Transition 功能，設計互動式網頁設計。</p>
+  <p style="font-size: 1.5rem; margin-top: 10px;">以下運用的網頁設計功能包含：圖片上升動畫、翻卡、Focus mode、以及文字span功能！</p>
+</section>
+
+<!-- ② 圖片上升動畫 -->
+<section class="image-section">
+  <h1>① 圖片上升動畫 </h1>
+  <img src="https://picsum.photos/1200/800" alt="Rising Image" id="riseImage">
+</section>
+
+<!-- ③ 翻卡效果 -->
+<section class="flip-section">
+  <h1>② 翻卡效果</h1>
+  <p>卡片滾動到螢幕中間時會自動翻轉。</p>
+  <div class="card-container">
+    <div class="card" id="flipCard">
+      <div class="front"></div>
+      <div class="back">我是卡片背面！🌿</div>
+    </div>
+  </div>
+</section>
+
+<!-- ④ Focus Mode -->
+<section id="focus" class="focus-section" 
+  style="background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;">
+  <div class="focus-content">
+    <h1>③ Focus Mode</h1>
+    <p>當滑動到這個區塊時，背景圖片會自動變暗。</p>
+    <p>離開時，會自動變亮。</p>
+  </div>
+</section>
+
+<!-- ⑤ 文字底線動畫 -->
+<section class="text-section">
+  <h1>④ 文字強調（span）動畫</h1>
+  <p>
+    當網頁往下滾動時，有一些<span>想要強調的文字</span>會被自動強調，並且出現<span>底線滑入動畫</span>，讓重點更明顯，幫助閱讀者在段落中<span>維持注意力</span>。
+  </p>
+</section>
+
+<!-- ⑥ Footer -->
+<footer>
+  <p>© 2025 AS#06: Keyframe & Transition | Designed by 許容榕、老師上課教材、AI</p>
+</footer>
+
+<script>
+// ② 圖片上升動畫
+const riseImage = document.getElementById('riseImage');
+const imageObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) riseImage.classList.add('active');
+  });
+}, { threshold: 0.5 });
+imageObserver.observe(riseImage);
+
+// ③ 翻卡效果
+const card = document.getElementById('flipCard');
+const cardObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) card.classList.add('flip');
+  });
+}, { threshold: 0.5 });
+cardObserver.observe(card);
+
+// ④ Focus Mode
+const focusSection = document.querySelector('.focus-section');
+
+const focusObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      focusSection.classList.add('active');
+      focusSection.classList.remove('inactive');
+    } else {
+      focusSection.classList.remove('active');
+      focusSection.classList.add('inactive');
+    }
+  });
+}, { threshold: 0.3 });
+
+focusObserver.observe(focusSection);
+
+
+// ⑤ Span底線動畫
+const spans = document.querySelectorAll('.text-section span');
+const spanObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('active');
+  });
+}, { threshold: 0.6 });
+spans.forEach(span => spanObserver.observe(span));
+</script>
+
+</body>
+</html>
