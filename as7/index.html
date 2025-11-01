@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AS#7: Using Template</title>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        #outer {
+            background-image: url(https://jungjunghsu.github.io/as7/assets/ai-02.jpeg);
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            width: 100%;
+        }
+
+        /* 滾動動畫條 */
+        #statusbar {
+            width: 0;
+            height: 100vh;
+            background-image: url(https://jungjunghsu.github.io/as7/assets/ai-01.jpeg);
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        .section {
+            height: 100vh;
+        }
+
+        .tall-section {
+            height: 300vh;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .text-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .scroll-container {
+            height: 1000vh;
+            position: relative;
+        }
+
+        .horizontal-section {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            width: 500vw;
+            display: flex;
+            flex-direction: row;
+            transition: transform 0.1s linear;
+        }
+
+        .horizontal-item {
+            width: 100vw;
+            height: 100vh;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div style="height:100vh; background:rgb(0, 59, 79);" class="section">
+        <h1 style=" color:white; text-align:center; padding-top:40vh;">【效果一】Progress Bar left right without pos
+            detection</h1>
+        <p style="color:white; text-align:center; font-size:1.2em; line-height:1.8;">主題：從黑暗，邁向彩色的城市<br>
+            製作方式：運用 Bing 產生一張「鄉村地圖」風格之 AI 圖片，另一張降低色溫與飽和度以做出區別。
+        </p>
+    </div>
+
+    <div class="tall-section">
+        <div id="outer">
+            <div id="statusbar"></div>
+        </div>
+    </div>
+
+    <div style="background:rgb(0, 59, 79);" class="section">
+        <h1 style="color:white; text-align:center; padding-top:40vh;">【效果二】horizontal-section
+        </h1>
+        <p style="color:white; text-align:center; font-size:1.2em; line-height:1.8;">主題：黑與白．被攝者<br>
+            製作方式：運用 Bing 生成城市攝影風格之 AI 圖片，試圖呈現一種 AI 攝影展的形式。
+        </p>
+    </div>
+
+    <div class="scroll-container">
+        <div class="horizontal-section">
+            <div class="horizontal-item bg-dark text-center"
+                style="background-image: url(https://jungjunghsu.github.io/as7/assets/ai-03.jpeg);">
+                PC#1：城市．交錯</div>
+            <div class="horizontal-item bg-dark text-center"
+                style="background-image: url(https://jungjunghsu.github.io/as7/assets/ai-04.jpeg);">
+                PC#2：職人．工藝</div>
+            <div class="horizontal-item bg-success text-center"
+                style="background-image: url(https://jungjunghsu.github.io/as7/assets/ai-05.jpeg);">
+                PC#3：一顰．一笑</div>
+            <div class="horizontal-item bg-danger text-center"
+                style="background-image: url(https://jungjunghsu.github.io/as7/assets/ai-06.jpeg);">
+                PC#4：沙丘．寂靜</div>
+            <div class="horizontal-item bg-info text-center"
+                style="background-image: url(https://jungjunghsu.github.io/as7/assets/ai-07.jpeg)">
+                PC#5：人來．人往</div>
+        </div>
+    </div>
+
+    <div class="vh-100 bg-dark text-center"
+        style="height:100vh; background-image: url(https://jungjunghsu.github.io/as7/assets/ai-08.jpeg);">
+        PC#6：滿野．星空
+    </div>
+    <div class="vh-100 bg-warning text-center"
+        style="height:100vh; background-image: url(https://jungjunghsu.github.io/as7/assets/ai-09.jpeg);">
+        PC#7：忠誠．守護
+    </div>
+    <div class="vh-100 bg-info text-center" style="height:10vh;background:rgb(0, 59, 79); font-size:18px;">© 2025 AS#07:
+        Using Template | Designed by 許容榕、老師上課教材、AI</div>
+
+    <script>
+        $(document).ready(function () {
+    var $outer = $('#outer');
+    var $statusbar = $('#statusbar');
+
+    function updateStatusBar() {
+        var outerParent = $outer.parent();            // 第二區塊容器
+        var outerTop = outerParent.offset().top;      // 第二區塊頂部位置
+        var outerHeight = outerParent.height();      // 第二區塊總高度
+        var scrollTop = $(window).scrollTop();       // 目前滾動位置
+        var maxScroll = outerHeight - $outer.height(); // 可滾動距離
+        var relativeScroll = scrollTop - outerTop;   // 第二區塊內相對滾動量
+        var newWidth = 0;
+
+        if (relativeScroll <= 0) {
+            newWidth = 0;
+        } else if (relativeScroll >= maxScroll) {
+            newWidth = $outer.width();
+        } else {
+            newWidth = $outer.width() * (relativeScroll / maxScroll);
+        }
+
+        $statusbar.css('width', newWidth);
+    }
+
+    // 監聽滾動與視窗尺寸變動
+    $(window).on('scroll resize', updateStatusBar);
+
+    // 頁面初始呼叫
+    updateStatusBar();
+});
+
+        $(window).on("load", function () {
+            const $scrollContainer = $(".scroll-container");
+            const containerOffsetTop = $scrollContainer.offset().top;
+            const containerHeight = $scrollContainer.outerHeight() - $(window).height();
+            const $horizontalSection = $(".horizontal-section");
+
+            $(window).on("scroll", function () {
+                const scrolled = $(window).scrollTop();
+
+                let scrollPercentage = 0;
+                if (
+                    scrolled > containerOffsetTop &&
+                    scrolled < containerOffsetTop + containerHeight
+                ) {
+                    scrollPercentage = (scrolled - containerOffsetTop) / containerHeight;
+                } else if (scrolled >= containerOffsetTop + containerHeight) {
+                    scrollPercentage = 1;
+                }
+
+                const maxScroll = $horizontalSection.outerWidth() - $(window).width();
+                const horizontalScroll = scrollPercentage * maxScroll;
+
+                $horizontalSection.css("transform", `translateX(-${horizontalScroll}px)`);
+            });
+        });    
+    </script>
+</body>
+
+</html>
