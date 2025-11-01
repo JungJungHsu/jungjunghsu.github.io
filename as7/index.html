@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AS#7: Using Template</title>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+        }
+
+        #outer {
+            background-image: url(https://jungjunghsu.github.io/as7/assets/ai-02.jpeg);
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        #statusbar {
+            width: 0;
+            height: 100vh;
+            background-image: url(https://jungjunghsu.github.io/as7/assets/ai-01.jpeg);
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .text-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .scroll-container {
+            height: 1000vh;
+            position: relative;
+        }
+
+        .horizontal-section {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            width: 500vw;
+            /* 5個100vw的區塊 */
+            display: flex;
+            flex-direction: row;
+            transition: transform 0.1s linear;
+        }
+
+        .horizontal-item {
+            width: 100vw;
+            height: 100vh;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div style="height:100vh;background:rgb(0, 59, 79);"">
+        <h1 style=" color:white; text-align:center; padding-top:40vh;">【效果一】Progress Bar left right without pos
+        detection</h1>
+        <p style="color:white; text-align:center; font-size:1.2em; line-height:1.8;">主題：從黑暗，邁向彩色的城市<br>
+            製作方式：運用 Bing 產生一張「鄉村地圖」風格之 AI 圖片，另一張降低色溫與飽和度以做出區別。
+        </p>
+    </div>
+
+    <div style="height:300vh;">
+        <div id="outer" class="sticky-top">
+            <div id="statusbar"></div>
+        </div>
+    </div>
+
+    <div style="height:100vh;background:rgb(0, 59, 79);">
+        <h1 style="color:white; text-align:center; padding-top:40vh;">【效果二】horizontal-section
+        </h1>
+        <p style="color:white; text-align:center; font-size:1.2em; line-height:1.8;">主題：黑與白．被攝者<br>
+            製作方式：運用 Bing 生成城市攝影風格之 AI 圖片，試圖呈現一種 AI 攝影展的形式。
+        </p>
+    </div>
+
+    <div class="scroll-container">
+        <div class="horizontal-section">
+            <div class="horizontal-item bg-dark text-center"
+                style="background-image: url(https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1600&q=80);">
+                Section 1</div>
+            <div class="horizontal-item bg-dark text-center"
+                style="background-image: url(https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1600&q=80);">
+                Section 2</div>
+            <div class="horizontal-item bg-success text-center" 
+                style="background-image: url(https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1600&q=80);">
+                Section 3</div>
+            <div class="horizontal-item bg-danger text-center" 
+                style="background-image: url(https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1600&q=80);">
+                Section 4</div>
+            <div class="horizontal-item bg-info text-center" 
+                style="background-image: url(https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1600&q=80)">
+                Section 5</div>
+        </div>
+    </div>
+
+    <div class="vh-100 bg-dark text-center" 
+         style="height:100vh; background-image: url(https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1600&q=80);">
+         Footer Section 1
+    </div>
+    <div class="vh-100 bg-warning text-center" 
+         style="height:100vh; background-image: url(https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1600&q=80);">
+         Footer Section 2
+    </div>
+    <div class="vh-100 bg-info text-center" style="height:10vh;background:rgb(0, 59, 79); font-size:18px;">© 2025 AS#07:
+        Using Template | Designed by 許容榕、老師上課教材、AI</div>
+
+    <script>
+        $(document).ready(function () {
+            var max_scroll = $(document).height() - $(window).height();
+            var win_w = $(window).width();
+
+            $(window).scroll(function () {
+                var scrolled = $(window).scrollTop();
+                var new_width = (win_w * scrolled) / max_scroll;
+
+                $("#statusbar").css({
+                    width: new_width
+                });
+            });
+        });
+
+        $(window).on("load", function () {
+            const $scrollContainer = $(".scroll-container");
+            const containerOffsetTop = $scrollContainer.offset().top;
+            const containerHeight = $scrollContainer.outerHeight() - $(window).height();
+            const $horizontalSection = $(".horizontal-section");
+
+            $(window).on("scroll", function () {
+                const scrolled = $(window).scrollTop();
+
+                let scrollPercentage = 0;
+                if (
+                    scrolled > containerOffsetTop &&
+                    scrolled < containerOffsetTop + containerHeight
+                ) {
+                    scrollPercentage = (scrolled - containerOffsetTop) / containerHeight;
+                } else if (scrolled >= containerOffsetTop + containerHeight) {
+                    scrollPercentage = 1;
+                }
+
+                const maxScroll = $horizontalSection.outerWidth() - $(window).width();
+                const horizontalScroll = scrollPercentage * maxScroll;
+
+                $horizontalSection.css("transform", `translateX(-${horizontalScroll}px)`);
+            });
+        });    
+    </script>
+</body>
+
+</html>
