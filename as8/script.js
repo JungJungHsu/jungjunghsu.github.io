@@ -68,46 +68,40 @@
 
   // Generate chapter text blocks dynamically (if there are fewer than desired)
   function generateChapterText(){
+    // No-op: preserve chapter text exactly as authored in HTML.
+    // We used to auto-generate extra .text-block elements here, but the user
+    // prefers only the HTML-defined content. This function intentionally does nothing.
+    return;
+  }
+
+  // Remove any previously auto-generated chapter paragraphs that match known
+  // sample strings. This helps when an older version appended generated text
+  // into chapters; it will remove those specifically (leaving authored text).
+  function removeGeneratedChapterText(){
     const chapterSamples = [
       '在這一段，我們觀察主角的日常細節，微小的動作逐漸聚焦出主題。',
       '畫面慢慢拉近，音色與光影開始產生對話，情緒緩緩升起。',
       '一個轉折出現，場景的物件帶出過去的線索與未來的可能。',
+      '視覩節奏加快，敘事層次開始疊合，情感的重量逐步累積。',
       '視覺節奏加快，敘事層次開始疊合，情感的重量逐步累積。',
       '聲音與畫面的對應揭示了人物內心的矛盾與希望。',
       '結尾處留下一個開放的問題，讓讀者在下一章繼續探索。'
     ];
+    // also include shorter identifying fragments
+    const fragments = ['視覺節奏加快','聲音與畫面的對應揭示','結尾處留下一個開放的問題'];
 
-    document.querySelectorAll('.chapter').forEach((chapter, idx)=>{
-      const container = chapter.querySelector('.chapter-text');
-      if(!container) return;
-      // if already has several text-blocks, keep them; otherwise ensure at least 6
-      const existing = container.querySelectorAll('.text-block').length;
-      const need = Math.max(6 - existing, 0);
-      for(let i=0;i<need;i++){
-        const div = document.createElement('div');
-        div.className = 'text-block';
-        // create slightly varied content
-        div.textContent = chapterSamples[(idx*3 + i) % chapterSamples.length];
-        container.appendChild(div);
-      }
+    document.querySelectorAll('.chapter .chapter-text .text-block').forEach(block=>{
+      const txt = (block.textContent || '').trim();
+      // remove if exact match to any sample or contains any fragment
+      const isSample = chapterSamples.includes(txt) || fragments.some(f=> txt.includes(f));
+      if(isSample){ block.remove(); }
     });
   }
 
-  // IntersectionObserver to auto play/pause chapter videos when in view
-  const io = new IntersectionObserver(entries=>{
-    entries.forEach(entry=>{
-      const vid = entry.target.querySelector('.chapter-video');
-      if(!vid) return;
-      if(entry.intersectionRatio > 0.5){
-        pauseChapterVideosExcept(vid);
-        vid.play().catch(()=>{});
-      } else {
-        vid.pause();
-      }
-    });
-  }, { threshold:[0.0,0.25,0.5,0.75,1.0] });
-
-  document.querySelectorAll('.chapter').forEach(sec=> io.observe(sec));
+  // Previously we used an IntersectionObserver to pause chapter videos when out of view
+  // to save resources. The user requested chapter videos to remain dynamic like the
+  // landing hero (autoplay + loop). To satisfy that, we'll no longer pause chapter
+  // videos on intersection change. Instead attempt to autoplay them on DOMContentLoaded.
 
   // Clicking a thumbnail scrolls to target and attempts to play its chapter video
   document.querySelectorAll('.thumb').forEach(t=>{
@@ -116,7 +110,7 @@
       if(!target) return;
       setTimeout(()=>{
         const vid = target.querySelector('.chapter-video');
-        if(vid){ pauseChapterVideosExcept(vid); vid.play().catch(()=>{}); }
+        if(vid){ vid.play().catch(()=>{}); }
       },450);
     });
   });
@@ -128,8 +122,12 @@
   document.addEventListener('DOMContentLoaded', ()=>{
     autoplayThumbs();
     generateThumbDescriptions();
-    generateChapterText();
+    // Do not auto-generate chapter text; remove any previously appended samples
+    // so only authored content remains.
+    removeGeneratedChapterText();
     generateOnboardingText();
+    // Attempt to autoplay all chapter videos so they behave like the landing hero
+    document.querySelectorAll('.chapter-video').forEach(v=> v.play().catch(()=>{}));
   });
 
 })();
