@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>11/26課堂練習：Global Timezone Visualizer</title>
+    <script src="//unpkg.com/globe.gl"></script>
+    <script src="//unpkg.com/d3"></script>
+    <style>
+        body { 
+            margin: 0; 
+            padding: 0; 
+            overflow-x: hidden; /* Prevent horizontal scroll */
+            background: #000;
+            font-family: 'Inter', sans-serif;
+            color: #fff;
+        }
+        
+        #globe-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+        }
+
+        #overlay {
+            position: relative;
+            z-index: 2;
+            pointer-events: none; /* Let clicks pass through to the globe where possible, though scroll is main interaction */
+            height: 500vh; /* Make the page scrollable */
+        }
+
+        .section {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 1s ease;
+            pointer-events: auto;
+        }
+
+        .section.visible {
+            opacity: 1;
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            background: linear-gradient(90deg, #00f260, #0575e6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px rgba(5, 117, 230, 0.5);
+        }
+
+        p {
+            font-size: 1.5rem;
+            max-width: 600px;
+            line-height: 1.6;
+            background: rgba(0,0,0,0.6);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(10, 10, 20, 0.9);
+            border: 1px solid #00f260;
+            padding: 15px;
+            border-radius: 8px;
+            pointer-events: none;
+            font-size: 0.9rem;
+            box-shadow: 0 0 15px rgba(0, 242, 96, 0.3);
+            display: none;
+            backdrop-filter: blur(4px);
+            color: #fff;
+            z-index: 10;
+        }
+
+        .tooltip h3 {
+            margin: 0 0 5px 0;
+            color: #00f260;
+            font-size: 1.1rem;
+        }
+
+        .tooltip .time {
+            font-size: 1.4rem;
+            font-weight: bold;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .scroll-indicator {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+            animation: bounce 2s infinite;
+            opacity: 0.7;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateX(-50%) translateY(0);}
+            40% {transform: translateX(-50%) translateY(-10px);}
+            60% {transform: translateX(-50%) translateY(-5px);}
+        }
+
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="globe-container"></div>
+    
+    <div id="overlay">
+        <div class="section visible" data-country="global">
+            <h1>11/26課堂練習：World Time</h1>
+            <p>Scroll to explore the globe and discover time zones.</p>
+            <div class="scroll-indicator">↓ Scroll</div>
+        </div>
+        <div class="section" data-country="USA">
+            <h1>Americas</h1>
+            <p>From the Pacific to the Atlantic.</p>
+        </div>
+        <div class="section" data-country="China">
+            <h1>Asia & Oceania</h1>
+            <p>Where the day begins.</p>
+        </div>
+        <div class="section" data-country="Europe">
+            <h1>Europe & Africa</h1>
+            <p>The Prime Meridian and beyond.</p>
+        </div>
+        <div class="section" data-country="global">
+            <h1>Global View</h1>
+            <p>The world at your fingertips.</p>
+        </div>
+    </div>
+
+    <div id="tooltip" class="tooltip"></div>
+
+    <script>
+        const globeContainer = document.getElementById('globe-container');
+        const tooltip = document.getElementById('tooltip');
+
+        // Store all polygons for country lookup
+        let allPolygons = [];
+        let highlightedCountry = null;
+        let highlightedFeatures = []; // array of feature objects currently highlighted
+
+        // Country code to common name mapping
+        const countryMap = {
+            'USA': ['US', 'United States', 'USA'],
+            'China': ['CN', 'China', 'CHN'],
+            'France': ['FR', 'France', 'FRA'],
+            'Japan': ['JP', 'Japan', 'JPN'],
+            'Germany': ['DE', 'Germany', 'DEU'],
+            'UK': ['GB', 'United Kingdom', 'GBR'],
+            'India': ['IN', 'India', 'IND'],
+            'Brazil': ['BR', 'Brazil', 'BRA'],
+            'Australia': ['AU', 'Australia', 'AUS'],
+            'Canada': ['CA', 'Canada', 'CAN']
+        };
+
+        // Explicit alias mapping for section -> possible country names in GeoJSON
+        // This helps match common labels like 'USA' -> 'United States of America'
+        const countryMatchMap = {
+            'USA': ['united states of america', 'united states', 'usa'],
+            'China': ['china', "people's republic of china", 'prc'],
+            'France': ['france', 'french republic', 'république française'],
+            'UK': ['united kingdom', 'uk', 'great britain', 'britain'],
+            'Germany': ['germany', 'deutschland'],
+            'Japan': ['japan', 'nippon'],
+            'India': ['india', 'bharat'],
+            'Brazil': ['brazil', 'brasil'],
+            'Australia': ['australia'],
+            'Canada': ['canada'],
+            'Europe': [
+                'europe', 'european union', 'albania', 'andorra', 'armenia', 'austria', 'azerbaijan', 'belarus', 'belgium', 'bosnia and herzegovina', 'bulgaria', 'croatia', 'cyprus', 'czech republic', 'denmark', 'estonia', 'finland', 'france', 'georgia', 'germany', 'greece', 'hungary', 'iceland', 'ireland', 'italy', 'kazakhstan', 'kosovo', 'latvia', 'liechtenstein', 'lithuania', 'luxembourg', 'malta', 'moldova', 'monaco', 'montenegro', 'netherlands', 'north macedonia', 'norway', 'poland', 'portugal', 'romania', 'russia', 'san marino', 'serbia', 'slovakia', 'slovenia', 'spain', 'sweden', 'switzerland', 'turkey', 'ukraine', 'united kingdom', 'vatican city'
+            ]
+        };
+
+        // Initialize Globe
+        const world = Globe()
+            (globeContainer)
+            .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg')
+            .backgroundImageUrl('//unpkg.com/three-globe/example/img/night-sky.png')
+            .pointOfView({ lat: 20, lng: 0, altitude: 2.5 })
+            .polygonCapColor((feat) => {
+                // Highlight cap color for active country/features
+                if (highlightedFeatures && highlightedFeatures.length && highlightedFeatures.includes(feat)) {
+                    return 'rgba(0, 242, 96, 0.25)'; // Bright green cap
+                }
+                return 'rgba(200, 200, 200, 0)'; // Transparent
+            })
+            .polygonSideColor(() => 'rgba(0, 0, 0, 0)')
+            .polygonStrokeColor((d) => {
+                // Highlight borders of currently active country/features
+                if (highlightedFeatures && highlightedFeatures.length && highlightedFeatures.includes(d)) {
+                    return 'rgba(0, 242, 96, 1)'; // Bright green for highlighted
+                }
+                return 'rgba(255, 255, 255, 0.08)'; // Very subtle gray
+            })
+            .onPolygonHover(handleHover)
+            .width(window.innerWidth)
+            .height(window.innerHeight);
+
+        // Load Countries GeoJSON (for clear country outlines)
+        // Using a world countries GeoJSON to map and highlight country polygons.
+        fetch('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json')
+            .then(res => res.json())
+            .then(data => {
+                // Use country polygons for highlighting
+                world.polygonsData(data.features);
+                allPolygons = data.features;
+
+                // Normalize features for quick lookup by name
+                // We'll not pre-map everything; we'll search when needed
+                console.log('Loaded countries polygons:', allPolygons.length);
+            })
+            .catch(err => {
+                console.error('Failed to load countries GeoJSON:', err);
+            });
+
+        // Hover Interaction
+        let hoverD = null;
+        
+        function handleHover(polygon, prevPolygon) {
+            hoverD = polygon;
+            
+            // Show country name on hover (if available)
+            if (polygon && polygon.properties) {
+                const name = polygon.properties.name || polygon.properties.NAME || polygon.properties.ADMIN || 'Unknown';
+                tooltip.style.display = 'block';
+                tooltip.innerHTML = `
+                    <h3>${name}</h3>
+                `;
+            } else {
+                tooltip.style.display = 'none';
+            }
+        }
+
+        // Mouse movement for tooltip
+        window.addEventListener('mousemove', (e) => {
+            if (hoverD) {
+                tooltip.style.left = `${e.clientX + 15}px`;
+                tooltip.style.top = `${e.clientY + 15}px`;
+            }
+        });
+
+        // Scroll Interaction
+        // We will map scroll position to longitude rotation
+        let lastHighlightedCountry = null;
+        
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            const maxScroll = document.body.scrollHeight - window.innerHeight;
+            const scrollFraction = scrollY / maxScroll;
+
+            // Rotate the globe based on scroll
+            // Full scroll = 360 degrees rotation (or more)
+            const rotation = scrollFraction * 360; 
+            
+            // Adjust point of view
+            // We can also change latitude or altitude for a cinematic effect
+            world.pointOfView({
+                lat: 20 + Math.sin(scrollFraction * Math.PI) * 20, // Slight tilt up and down
+                lng: -rotation, // Rotate west to east
+                altitude: 2.5 - Math.sin(scrollFraction * Math.PI) * 0.5 // Zoom in slightly in the middle
+            });
+
+            // Fade in sections and highlight corresponding country
+            const sections = document.querySelectorAll('.section');
+            let activeCountry = null;
+            
+            sections.forEach(sec => {
+                const rect = sec.getBoundingClientRect();
+                if (rect.top < window.innerHeight * 0.7 && rect.bottom > window.innerHeight * 0.3) {
+                    sec.classList.add('visible');
+                    sec.style.opacity = 1;
+                    activeCountry = sec.dataset.country; // Get country from data attribute
+                } else {
+                    sec.classList.remove('visible');
+                    sec.style.opacity = 0;
+                }
+            });
+
+            // Update highlighted country if it changed
+            if (activeCountry && activeCountry !== lastHighlightedCountry) {
+                lastHighlightedCountry = activeCountry;
+                highlightedCountry = activeCountry;
+
+                // Compute highlighted features by matching country name (case-insensitive)
+                if (highlightedCountry === 'global' || !allPolygons.length) {
+                    highlightedFeatures = [];
+                } else {
+                    const q = highlightedCountry.toString().toLowerCase();
+                    // Prefer alias list when available
+                    const aliases = countryMatchMap[highlightedCountry] || [q];
+
+                    highlightedFeatures = allPolygons.filter(f => {
+                        const props = f.properties || {};
+                        const name = (props.name || props.NAME || props.ADMIN || '').toString().toLowerCase();
+                        const iso_a2 = (props.iso_a2 || props.ISO_A2 || '').toString().toLowerCase();
+                        const iso_a3 = (props.iso_a3 || props.ISO_A3 || '').toString().toLowerCase();
+
+                        // match against aliases, exact iso codes, or substring of the name
+                        const aliasMatch = aliases.some(a => name === a || name.includes(a) || a.includes(name));
+                        const isoMatch = aliases.some(a => a.toLowerCase() === iso_a2 || a.toLowerCase() === iso_a3);
+                        const substrMatch = aliases.some(a => name.includes(a) || a.includes(name));
+                        return aliasMatch || isoMatch || substrMatch;
+                    });
+
+                    if (!highlightedFeatures.length) {
+                        // fallback: try simple substring match on the provided label
+                        highlightedFeatures = allPolygons.filter(f => {
+                            const props = f.properties || {};
+                            const name = (props.name || props.NAME || props.ADMIN || '').toString().toLowerCase();
+                            return name.includes(q) || q.includes(name);
+                        });
+                    }
+                    console.log(`Highlighted ${highlightedCountry}: ${highlightedFeatures.length} features`);
+                }
+
+                // Force globe to use the new highlightedFeatures in the stroke/cap color callbacks
+                world
+                    .polygonCapColor((feat) => {
+                        if (highlightedFeatures && highlightedFeatures.length && highlightedFeatures.includes(feat)) {
+                            return 'rgba(0, 242, 96, 0.25)';
+                        }
+                        return 'rgba(200, 200, 200, 0)';
+                    })
+                    .polygonStrokeColor((d) => {
+                        if (highlightedFeatures && highlightedFeatures.length && highlightedFeatures.includes(d)) {
+                            return 'rgba(0, 242, 96, 1)';
+                        }
+                        return 'rgba(255, 255, 255, 0.08)';
+                    });
+            }
+        });
+
+        // Handle Resize
+        window.addEventListener('resize', () => {
+            world.width(window.innerWidth).height(window.innerHeight);
+        });
+
+    </script>
+</body>
+</html>

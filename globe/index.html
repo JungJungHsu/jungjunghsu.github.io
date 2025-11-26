@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Timezone Visualizer</title>
+    <script src="//unpkg.com/globe.gl"></script>
+    <script src="//unpkg.com/d3"></script>
+    <style>
+        body { 
+            margin: 0; 
+            padding: 0; 
+            overflow-x: hidden; /* Prevent horizontal scroll */
+            background: #000;
+            font-family: 'Inter', sans-serif;
+            color: #fff;
+        }
+        
+        #globe-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+        }
+
+        #overlay {
+            position: relative;
+            z-index: 2;
+            pointer-events: none; /* Let clicks pass through to the globe where possible, though scroll is main interaction */
+            height: 500vh; /* Make the page scrollable */
+        }
+
+        .section {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 1s ease;
+            pointer-events: auto;
+        }
+
+        .section.visible {
+            opacity: 1;
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            background: linear-gradient(90deg, #00f260, #0575e6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px rgba(5, 117, 230, 0.5);
+        }
+
+        p {
+            font-size: 1.5rem;
+            max-width: 600px;
+            line-height: 1.6;
+            background: rgba(0,0,0,0.6);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(10, 10, 20, 0.9);
+            border: 1px solid #00f260;
+            padding: 15px;
+            border-radius: 8px;
+            pointer-events: none;
+            font-size: 0.9rem;
+            box-shadow: 0 0 15px rgba(0, 242, 96, 0.3);
+            display: none;
+            backdrop-filter: blur(4px);
+            color: #fff;
+            z-index: 10;
+        }
+
+        .tooltip h3 {
+            margin: 0 0 5px 0;
+            color: #00f260;
+            font-size: 1.1rem;
+        }
+
+        .tooltip .time {
+            font-size: 1.4rem;
+            font-weight: bold;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .scroll-indicator {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+            animation: bounce 2s infinite;
+            opacity: 0.7;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateX(-50%) translateY(0);}
+            40% {transform: translateX(-50%) translateY(-10px);}
+            60% {transform: translateX(-50%) translateY(-5px);}
+        }
+
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="globe-container"></div>
+    
+    <div id="overlay">
+        <div class="section visible">
+            <h1>World Time</h1>
+            <p>Scroll to explore the globe and discover time zones.</p>
+            <div class="scroll-indicator">↓ Scroll</div>
+        </div>
+        <div class="section">
+            <h1>Americas</h1>
+            <p>From the Pacific to the Atlantic.</p>
+        </div>
+        <div class="section">
+            <h1>Europe & Africa</h1>
+            <p>The Prime Meridian and beyond.</p>
+        </div>
+        <div class="section">
+            <h1>Asia & Oceania</h1>
+            <p>Where the day begins.</p>
+        </div>
+        <div class="section">
+            <h1>Global View</h1>
+            <p>The world at your fingertips.</p>
+        </div>
+    </div>
+
+    <div id="tooltip" class="tooltip"></div>
+
+    <script>
+        const globeContainer = document.getElementById('globe-container');
+        const tooltip = document.getElementById('tooltip');
+
+        // Initialize Globe
+        const world = Globe()
+            (globeContainer)
+            .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg')
+            .backgroundImageUrl('//unpkg.com/three-globe/example/img/night-sky.png')
+            .pointOfView({ lat: 20, lng: 0, altitude: 2.5 })
+            .polygonCapColor(feat => 'rgba(200, 200, 200, 0)') // Initially transparent
+            .polygonSideColor(() => 'rgba(0, 0, 0, 0)')
+            .polygonStrokeColor(() => 'rgba(255, 255, 255, 0.1)')
+            .onPolygonHover(handleHover)
+            .width(window.innerWidth)
+            .height(window.innerHeight);
+
+        // Load Timezone Data
+        // Using a simplified geojson for performance if possible, or a standard one.
+        // This URL is a common source for timezone boundaries.
+        fetch('https://raw.githubusercontent.com/evansiroky/timezone-boundary-builder/master/release/ocean-10m.json')
+            .then(res => res.json())
+            .then(data => {
+                world.polygonsData(data.features);
+                
+                // Pre-calculate colors or other properties if needed
+                // For now, we'll just rely on hover
+            });
+
+        // Hover Interaction
+        let hoverD = null;
+        
+        function handleHover(polygon, prevPolygon) {
+            hoverD = polygon;
+            
+            world
+                .polygonCapColor(d => d === polygon ? 'rgba(0, 242, 96, 0.3)' : 'rgba(200, 200, 200, 0)')
+                .polygonStrokeColor(d => d === polygon ? '#00f260' : 'rgba(255, 255, 255, 0.1)');
+
+            if (polygon) {
+                const tzid = polygon.properties.tzid;
+                const now = new Date().toLocaleTimeString('en-US', { timeZone: tzid, hour: '2-digit', minute: '2-digit' });
+                
+                tooltip.style.display = 'block';
+                tooltip.innerHTML = `
+                    <h3>${tzid}</h3>
+                    <div class="time">${now}</div>
+                `;
+            } else {
+                tooltip.style.display = 'none';
+            }
+        }
+
+        // Mouse movement for tooltip
+        window.addEventListener('mousemove', (e) => {
+            if (hoverD) {
+                tooltip.style.left = `${e.clientX + 15}px`;
+                tooltip.style.top = `${e.clientY + 15}px`;
+            }
+        });
+
+        // Scroll Interaction
+        // We will map scroll position to longitude rotation
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            const maxScroll = document.body.scrollHeight - window.innerHeight;
+            const scrollFraction = scrollY / maxScroll;
+
+            // Rotate the globe based on scroll
+            // Full scroll = 360 degrees rotation (or more)
+            const rotation = scrollFraction * 360; 
+            
+            // Adjust point of view
+            // We can also change latitude or altitude for a cinematic effect
+            world.pointOfView({
+                lat: 20 + Math.sin(scrollFraction * Math.PI) * 20, // Slight tilt up and down
+                lng: -rotation, // Rotate west to east
+                altitude: 2.5 - Math.sin(scrollFraction * Math.PI) * 0.5 // Zoom in slightly in the middle
+            });
+
+            // Fade in sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(sec => {
+                const rect = sec.getBoundingClientRect();
+                if (rect.top < window.innerHeight * 0.7 && rect.bottom > window.innerHeight * 0.3) {
+                    sec.classList.add('visible');
+                    sec.style.opacity = 1;
+                } else {
+                    sec.classList.remove('visible');
+                    sec.style.opacity = 0;
+                }
+            });
+        });
+
+        // Handle Resize
+        window.addEventListener('resize', () => {
+            world.width(window.innerWidth).height(window.innerHeight);
+        });
+
+    </script>
+</body>
+</html>
